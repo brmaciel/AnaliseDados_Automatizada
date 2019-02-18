@@ -84,8 +84,11 @@ def executa_avaliacao(seeds, use_models):
         model_name.append(all_models[modelo].title())
         result = avalia_modelos(previsores, classe, classificador=all_models[modelo], n_seed=seeds)
         model_result.append(result)
-    
+        average_result[all_models[modelo].title()] = Series(array(result).mean())
+        
         create_file(result, modelo=all_models[modelo].title())
+    
+    average_result.sort_values(by=0, axis=1, ascending=False, inplace=True)
 
 
     ##### ########## ########## ########## ########## ########## #####
@@ -104,7 +107,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import accuracy_score
 from numpy import zeros, array
-from pandas import DataFrame
+from pandas import DataFrame, Series
 
 
 
@@ -129,6 +132,7 @@ nome_arquivo = 'resultados.csv'
 # Criacao do dataframe que armazenara os resultados
 seeds = 30
 result_dataframe = DataFrame(list(range(seeds)), columns=['seed'])
+average_result = DataFrame()
 
 model_result = []
 model_name = []
