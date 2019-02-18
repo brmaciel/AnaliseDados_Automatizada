@@ -28,7 +28,7 @@ def create_test_model(classificador, index_train, index_test):
     elif classificador == 'svm':
         modelo = SVC(kernel='rbf', random_state=1, C=2.0, gamma='auto')
     
-    elif classificador == 'rede neural':
+    elif classificador == 'rna':
         modelo = MLPClassifier(max_iter=1000, tol=0.000001, solver='adam',
                            hidden_layer_sizes=(100), activation='relu',
                            batch_size=200, learning_rate_init=0.001)
@@ -75,7 +75,18 @@ def create_file(resultado, modelo):
     
     colunas = list(result_dataframe.columns)
     arquivo = DataFrame(result_dataframe, columns=colunas)
-    arquivo.to_csv('resultados.csv', index=False)
+    arquivo.to_csv(nome_arquivo, index=False)
+
+def executa_avaliacao(seeds, use_models):
+    global model_result, model_name
+    
+    for modelo in use_models:
+        model_name.append(all_models[modelo].title())
+        result = avalia_modelos(previsores, classe, classificador=all_models[modelo], n_seed=seeds)
+        model_result.append(result)
+    
+        create_file(result, modelo=all_models[modelo].title())
+
 
     ##### ########## ########## ########## ########## ########## #####
     ##### ########## ########## ########## ########## ########## #####
@@ -96,6 +107,7 @@ from numpy import zeros, array
 from pandas import DataFrame
 
 
+
 ########## ########## ########## ##########
 # Avaliação com Validação Cruzada
 ########## ########## ########## ##########
@@ -108,8 +120,9 @@ classe = []
 # =====   Seleção dos modelos a utilizar   ===== #
 # Selecionar os modelos alterando a variavel use_models
 all_models = {1: 'naive bayes', 2: 'arvore', 3: 'forest',
-              4: 'knn', 5: 'regressao', 6: 'svm', 7: 'rede neural'}
+              4: 'knn', 5: 'regressao', 6: 'svm', 7: 'rna'}
 use_models = [1, 2, 5]
+nome_arquivo = 'resultados.csv'
 
 
 # =====   Coleta dos resultados e Criação do arquivo csv   ===== #
@@ -117,18 +130,10 @@ use_models = [1, 2, 5]
 seeds = 30
 result_dataframe = DataFrame(list(range(seeds)), columns=['seed'])
 
-# Coletar os resultados associando-os aos respectivos modelos
-# e Armazena-los em disco em formato csv
 model_result = []
 model_name = []
-for modelo in use_models:
-    model_name.append(all_models[modelo].title())
-    result = avalia_modelos(previsores, classe, classificador=all_models[modelo], n_seed=seeds)
-    model_result.append(result)
-    
-    create_file(result, modelo=all_models[modelo].title())
 
-# Testar 1 unico modelo: descomente linhas abaixo
-#mod = 3
-#resultados = avalia_modelos(previsores, classe, classificador=all_models[mod], n_seed=seeds)
-#create_file(resultados, modelo=all_models[mod].title())
+# Coletar os resultados associando-os aos respectivos modelos
+# e Armazena-los em disco em formato csv
+executa_avaliacao(seeds, use_models)
+#executa_avaliacao(seeds, [3]) # Testar 1 unico modelo
