@@ -90,6 +90,15 @@ def executa_avaliacao(seeds, use_models):
     
     average_result.sort_values(by=0, axis=1, ascending=False, inplace=True)
 
+def view_accuracy():
+    import matplotlib.pyplot as plt
+    x = average_result.columns
+    y = average_result.values.tolist()[0]
+    plt.plot(x, y, 'o-')
+    plt.title('Precisão')
+    plt.xlabel('Modelos')
+    plt.ylabel('Precisão')
+
 
     ##### ########## ########## ########## ########## ########## #####
     ##### ########## ########## ########## ########## ########## #####
@@ -141,3 +150,6 @@ model_name = []
 # e Armazena-los em disco em formato csv
 executa_avaliacao(seeds, use_models)
 #executa_avaliacao(seeds, [3]) # Testar 1 unico modelo
+
+# Visualização Grafica das Precisoes
+view_accuracy()
